@@ -3,11 +3,16 @@
 
   // ── Datos de engagement ───────────────────────────────────────────────
   const COLORS = { Low: 'var(--low)', Medium: 'var(--med)', High: 'var(--high)' };
-  const ICONS  = { Low: '🔴', Medium: '🟡', High: '🟢' };
   const DESCS  = {
-    Low:    'El jugador muestra poco compromiso.\nSe recomienda estrategias de re-engagement.',
-    Medium: 'El jugador tiene un compromiso moderado.\nOportunidad de fidelización activa.',
-    High:   'El jugador está muy comprometido.\n¡Excelente perfil para programas VIP!',
+    Low:    'El jugador muestra bajo nivel de compromiso con la plataforma. Se recomienda implementar estrategias de re-engagement.',
+    Medium: 'El jugador presenta un nivel de compromiso moderado. Existe potencial para incrementar la fidelización.',
+    High:   'El jugador muestra un alto nivel de compromiso. Perfil idóneo para programas de retención premium.',
+  };
+
+  const BADGE_STYLES = {
+    Low:    { color: 'var(--low)',  bg: 'var(--low-bg)',  border: 'rgba(244,63,94,0.25)' },
+    Medium: { color: 'var(--med)',  bg: 'var(--med-bg)',  border: 'rgba(245,158,11,0.25)' },
+    High:   { color: 'var(--high)', bg: 'var(--high-bg)', border: 'rgba(16,185,129,0.25)' },
   };
 
   // ── Sincronizar sliders ↔ inputs numéricos ────────────────────────────
@@ -56,7 +61,7 @@
     btn.disabled   = true;
     btn.innerHTML  = '<span class="spinner"></span> Analizando...';
     status.style.color = 'var(--med)';
-    status.textContent = '🔄 Ejecutando modelo...';
+    status.textContent = 'Ejecutando modelo CatBoost...';
 
     const payload = {
       play_time_hours:              parseFloat(document.getElementById('r-hours').value),
@@ -82,14 +87,14 @@
       updateResult(data, payload);
 
       status.style.color = 'var(--high)';
-      status.textContent = '✅ Análisis completado';
+      status.textContent = 'Análisis completado';
     } catch (e) {
       status.style.color = 'var(--low)';
-      status.textContent = `❌ Error: ${e.message}`;
-      showToast(`❌ ${e.message}`, 'error');
+      status.textContent = `Error: ${e.message}`;
+      showToast(e.message, 'error');
     } finally {
       btn.disabled  = false;
-      btn.innerHTML = '🔍 Analizar Jugador';
+      btn.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analizar Jugador`;
     }
   }
 
@@ -98,12 +103,20 @@
     const label = data.label;
     const probs = data.probabilities;
     const color = COLORS[label];
+    const style = BADGE_STYLES[label];
 
     // Caja principal
     const box = document.getElementById('result-box');
     box.style.borderColor = color;
+    box.style.background  = style.bg.replace(')', ', 0.06)').replace('rgba', 'rgba');
 
-    document.getElementById('result-icon').textContent  = ICONS[label];
+    // Badge
+    const badge = document.getElementById('result-badge');
+    badge.textContent        = label.toUpperCase();
+    badge.style.color        = style.color;
+    badge.style.background   = style.bg;
+    badge.style.borderColor  = style.border;
+
     document.getElementById('result-label').textContent = label.toUpperCase();
     document.getElementById('result-label').style.color = color;
     document.getElementById('result-desc').textContent  = DESCS[label];

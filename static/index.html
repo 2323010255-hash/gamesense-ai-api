@@ -4,106 +4,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GameSense AI — Predictor de Engagement</title>
+  <title>GameSense AI — Player Engagement Predictor</title>
   <meta name="description" content="Herramienta de predicción de engagement de jugadores con modelo CatBoost." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 
 <body>
 
-  <!-- ══ Header ══════════════════════════════════════════════════════════════ -->
+  <!-- ══ Header ══════════════════════════════════════════════════════ -->
   <header>
     <div class="header-logo">
-      <span class="icon">🎮</span>
+      <div class="header-logo-icon">
+        <svg viewBox="0 0 24 24">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
       GameSense AI
     </div>
-    <span class="header-badge">Motor: CatBoost &nbsp;·&nbsp; FastAPI</span>
+    <div class="header-right">
+      <div class="status-dot">Live</div>
+      <span class="header-badge">CatBoost · FastAPI</span>
+    </div>
   </header>
 
-  <!-- ══ Main ════════════════════════════════════════════════════════════════ -->
+  <!-- ══ Main ════════════════════════════════════════════════════════ -->
   <main>
 
-    <!-- ── Panel izquierdo: Formulario ──────────────────────────────────── -->
+    <!-- ── Panel izquierdo: Formulario ─────────────────────────────── -->
     <div class="card" id="input-panel">
-      <div>
-        <div class="card-title">📋 Datos del Jugador</div><br>
-        <p class="card-sub">Ajusta los parámetros y presiona <strong>Analizar</strong></p>
+      <div class="card-header">
+        <div class="card-title">Parámetros del Jugador</div>
+        <div class="card-subtitle">Ajusta los valores y ejecuta el análisis</div>
       </div>
       <div class="divider"></div>
 
-      <!-- Slider 1: Horas de juego -->
-      <div class="field">
-        <div class="field-header">
-          <label class="field-label" for="r-hours">⏱️ Horas de Juego (Total)</label>
-          <input class="field-value" id="v-hours" type="number" value="12" min="0" max="24" step="0.5" />
-        </div>
-        <input type="range" id="r-hours" min="0" max="24" step="0.5" value="12" />
-        <div class="range-labels"><span>0 h</span><span>24 h</span></div>
-      </div>
+      <div class="fields-group">
 
-      <!-- Slider 2: Sesiones por semana -->
-      <div class="field">
-        <div class="field-header">
-          <label class="field-label" for="r-sessions">📅 Sesiones por Semana</label>
-          <input class="field-value" id="v-sessions" type="number" value="9" min="0" max="19" step="1" />
+        <!-- Slider 1: Horas de juego -->
+        <div class="field">
+          <div class="field-header">
+            <label class="field-label" for="r-hours">Horas de Juego (Total)</label>
+            <input class="field-value" id="v-hours" type="number" value="12" min="0" max="24" step="0.5" />
+          </div>
+          <input type="range" id="r-hours" min="0" max="24" step="0.5" value="12" />
+          <div class="range-labels"><span>0 h</span><span>24 h</span></div>
         </div>
-        <input type="range" id="r-sessions" min="0" max="19" step="1" value="9" />
-        <div class="range-labels"><span>0</span><span>19</span></div>
-      </div>
 
-      <!-- Slider 3: Duración promedio -->
-      <div class="field">
-        <div class="field-header">
-          <label class="field-label" for="r-duration">🕐 Duración Promedio (min)</label>
-          <input class="field-value" id="v-duration" type="number" value="96" min="10" max="179" step="1" />
+        <!-- Slider 2: Sesiones por semana -->
+        <div class="field">
+          <div class="field-header">
+            <label class="field-label" for="r-sessions">Sesiones por Semana</label>
+            <input class="field-value" id="v-sessions" type="number" value="9" min="0" max="19" step="1" />
+          </div>
+          <input type="range" id="r-sessions" min="0" max="19" step="1" value="9" />
+          <div class="range-labels"><span>0</span><span>19</span></div>
         </div>
-        <input type="range" id="r-duration" min="10" max="179" step="1" value="96" />
-        <div class="range-labels"><span>10 min</span><span>179 min</span></div>
-      </div>
 
-      <!-- Slider 4: Nivel -->
-      <div class="field">
-        <div class="field-header">
-          <label class="field-label" for="r-level">⚔️ Nivel del Jugador</label>
-          <input class="field-value" id="v-level" type="number" value="50" min="1" max="99" step="1" />
+        <!-- Slider 3: Duración promedio -->
+        <div class="field">
+          <div class="field-header">
+            <label class="field-label" for="r-duration">Duración Promedio (min)</label>
+            <input class="field-value" id="v-duration" type="number" value="96" min="10" max="179" step="1" />
+          </div>
+          <input type="range" id="r-duration" min="10" max="179" step="1" value="96" />
+          <div class="range-labels"><span>10 min</span><span>179 min</span></div>
         </div>
-        <input type="range" id="r-level" min="1" max="99" step="1" value="50" />
-        <div class="range-labels"><span>1</span><span>99</span></div>
-      </div>
 
-      <!-- Slider 5: Logros -->
-      <div class="field">
-        <div class="field-header">
-          <label class="field-label" for="r-achievements">🏆 Logros Desbloqueados</label>
-          <input class="field-value" id="v-achievements" type="number" value="24" min="0" max="49" step="1" />
+        <!-- Slider 4: Nivel -->
+        <div class="field">
+          <div class="field-header">
+            <label class="field-label" for="r-level">Nivel del Jugador</label>
+            <input class="field-value" id="v-level" type="number" value="50" min="1" max="99" step="1" />
+          </div>
+          <input type="range" id="r-level" min="1" max="99" step="1" value="50" />
+          <div class="range-labels"><span>1</span><span>99</span></div>
         </div>
-        <input type="range" id="r-achievements" min="0" max="49" step="1" value="24" />
-        <div class="range-labels"><span>0</span><span>49</span></div>
+
+        <!-- Slider 5: Logros -->
+        <div class="field">
+          <div class="field-header">
+            <label class="field-label" for="r-achievements">Logros Desbloqueados</label>
+            <input class="field-value" id="v-achievements" type="number" value="24" min="0" max="49" step="1" />
+          </div>
+          <input type="range" id="r-achievements" min="0" max="49" step="1" value="24" />
+          <div class="range-labels"><span>0</span><span>49</span></div>
+        </div>
+
       </div>
 
       <div class="divider"></div>
 
       <button class="btn-predict" id="btn-predict" onclick="runPrediction()">
-        🔍 Analizar Jugador
+        <svg class="btn-icon" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Analizar Jugador
       </button>
     </div>
 
-    <!-- ── Panel derecho: Resultado ─────────────────────────────────────── -->
+    <!-- ── Panel derecho: Resultado ─────────────────────────────────── -->
     <div class="card" id="result-panel">
-      <div>
-        <div class="card-title">📊 Resultado del Análisis</div><br>
-        <p class="card-sub">El modelo CatBoost predice el nivel de engagement</p>
+      <div class="card-header">
+        <div class="card-title">Resultado del Análisis</div>
+        <div class="card-subtitle">Predicción de nivel de engagement — modelo CatBoost</div>
       </div>
       <div class="divider"></div>
 
       <!-- Caja resultado principal -->
       <div class="result-box" id="result-box">
-        <div class="result-icon" id="result-icon">🎯</div>
-        <div class="result-label" id="result-label">Esperando análisis...</div>
+        <div class="result-badge" id="result-badge">PENDIENTE</div>
+        <div class="result-label" id="result-label">—</div>
         <div class="result-desc" id="result-desc">
-          Ingresa los datos del jugador<br />y presiona Analizar.
+          Configure los parámetros del jugador<br/>y ejecute el análisis.
         </div>
       </div>
 
@@ -114,8 +129,8 @@
 
           <div class="prob-row">
             <div class="prob-row-header">
-              <span>🔴 Low</span>
-              <span id="pct-low" style="color: var(--low)">—</span>
+              <span>Low</span>
+              <span id="pct-low" class="prob-pct" style="color: var(--low)">—</span>
             </div>
             <div class="prob-bar-track">
               <div class="prob-bar-fill" id="bar-low" style="background: var(--low)"></div>
@@ -124,8 +139,8 @@
 
           <div class="prob-row">
             <div class="prob-row-header">
-              <span>🟡 Medium</span>
-              <span id="pct-med" style="color: var(--med)">—</span>
+              <span>Medium</span>
+              <span id="pct-med" class="prob-pct" style="color: var(--med)">—</span>
             </div>
             <div class="prob-bar-track">
               <div class="prob-bar-fill" id="bar-med" style="background: var(--med)"></div>
@@ -134,8 +149,8 @@
 
           <div class="prob-row">
             <div class="prob-row-header">
-              <span>🟢 High</span>
-              <span id="pct-high" style="color: var(--high)">—</span>
+              <span>High</span>
+              <span id="pct-high" class="prob-pct" style="color: var(--high)">—</span>
             </div>
             <div class="prob-bar-track">
               <div class="prob-bar-fill" id="bar-high" style="background: var(--high)"></div>
@@ -147,31 +162,31 @@
 
       <!-- Resumen de valores -->
       <div class="info-box">
-        <div class="info-box-title">ℹ️ Valores del último análisis</div>
+        <div class="info-box-title">Valores del Último Análisis</div>
         <div class="info-grid" id="info-grid">
           <div class="info-item">Horas de juego <span id="inf-hours">—</span></div>
-          <div class="info-item">Sesiones/semana <span id="inf-sessions">—</span></div>
+          <div class="info-item">Sesiones / semana <span id="inf-sessions">—</span></div>
           <div class="info-item">Duración prom. <span id="inf-duration">—</span></div>
-          <div class="info-item">Nivel jugador <span id="inf-level">—</span></div>
+          <div class="info-item">Nivel <span id="inf-level">—</span></div>
           <div class="info-item">Logros <span id="inf-achievements">—</span></div>
         </div>
       </div>
 
-      <div class="status-bar" id="status-bar">✅ Modelo listo para predecir</div>
+      <div class="status-bar" id="status-bar">Modelo listo para analizar</div>
     </div>
 
   </main>
 
-  <!-- ══ Footer ══════════════════════════════════════════════════════════════ -->
+  <!-- ══ Footer ══════════════════════════════════════════════════════ -->
   <footer>
-    GameSense AI &nbsp;·&nbsp; CatBoost Model &nbsp;·&nbsp;
-    <a href="/docs" target="_blank">API Docs (Swagger)</a>
+    GameSense AI &nbsp;&middot;&nbsp; CatBoost Model &nbsp;&middot;&nbsp;
+    <a href="/docs" target="_blank">API Reference (Swagger)</a>
   </footer>
 
-  <!-- ══ Toast ════════════════════════════════════════════════════════════════ -->
+  <!-- ══ Toast ═══════════════════════════════════════════════════════ -->
   <div id="toast"></div>
 
-  <!-- ══ JavaScript ═══════════════════════════════════════════════════════════ -->
+  <!-- ══ JavaScript ══════════════════════════════════════════════════ -->
   <script src="/static/main.js"></script>
 </body>
 
