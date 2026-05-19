@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
@@ -24,9 +24,30 @@
       </div>
       GameSense AI
     </div>
+
     <div class="header-right">
       <div class="status-dot">Live</div>
-      <span class="header-badge">CatBoost · FastAPI</span>
+      <span class="header-badge">CatBoost &middot; FastAPI</span>
+
+      <!-- Botón modo claro / oscuro -->
+      <button id="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+        <!-- Ícono sol (modo claro activo) -->
+        <svg id="icon-sun" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"  x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+        </svg>
+        <!-- Ícono luna (modo oscuro activo) -->
+        <svg id="icon-moon" viewBox="0 0 24 24" style="display:none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
     </div>
   </header>
 
@@ -43,7 +64,6 @@
 
       <div class="fields-group">
 
-        <!-- Slider 1: Horas de juego -->
         <div class="field">
           <div class="field-header">
             <label class="field-label" for="r-hours">Horas de Juego (Total)</label>
@@ -53,7 +73,6 @@
           <div class="range-labels"><span>0 h</span><span>24 h</span></div>
         </div>
 
-        <!-- Slider 2: Sesiones por semana -->
         <div class="field">
           <div class="field-header">
             <label class="field-label" for="r-sessions">Sesiones por Semana</label>
@@ -63,7 +82,6 @@
           <div class="range-labels"><span>0</span><span>19</span></div>
         </div>
 
-        <!-- Slider 3: Duración promedio -->
         <div class="field">
           <div class="field-header">
             <label class="field-label" for="r-duration">Duración Promedio (min)</label>
@@ -73,7 +91,6 @@
           <div class="range-labels"><span>10 min</span><span>179 min</span></div>
         </div>
 
-        <!-- Slider 4: Nivel -->
         <div class="field">
           <div class="field-header">
             <label class="field-label" for="r-level">Nivel del Jugador</label>
@@ -83,7 +100,6 @@
           <div class="range-labels"><span>1</span><span>99</span></div>
         </div>
 
-        <!-- Slider 5: Logros -->
         <div class="field">
           <div class="field-header">
             <label class="field-label" for="r-achievements">Logros Desbloqueados</label>
@@ -99,7 +115,8 @@
 
       <button class="btn-predict" id="btn-predict" onclick="runPrediction()">
         <svg class="btn-icon" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         Analizar Jugador
       </button>
@@ -113,7 +130,6 @@
       </div>
       <div class="divider"></div>
 
-      <!-- Caja resultado principal -->
       <div class="result-box" id="result-box">
         <div class="result-badge" id="result-badge">PENDIENTE</div>
         <div class="result-label" id="result-label">—</div>
@@ -122,7 +138,6 @@
         </div>
       </div>
 
-      <!-- Barras de probabilidad -->
       <div class="prob-section">
         <div class="prob-section-title">Distribución de Probabilidades</div>
         <div class="prob-bars-wrap">
@@ -130,40 +145,39 @@
           <div class="prob-row">
             <div class="prob-row-header">
               <span>Low</span>
-              <span id="pct-low" class="prob-pct" style="color: var(--low)">—</span>
+              <span id="pct-low" class="prob-pct" style="color:var(--low)">—</span>
             </div>
             <div class="prob-bar-track">
-              <div class="prob-bar-fill" id="bar-low" style="background: var(--low)"></div>
+              <div class="prob-bar-fill" id="bar-low" style="background:var(--low)"></div>
             </div>
           </div>
 
           <div class="prob-row">
             <div class="prob-row-header">
               <span>Medium</span>
-              <span id="pct-med" class="prob-pct" style="color: var(--med)">—</span>
+              <span id="pct-med" class="prob-pct" style="color:var(--med)">—</span>
             </div>
             <div class="prob-bar-track">
-              <div class="prob-bar-fill" id="bar-med" style="background: var(--med)"></div>
+              <div class="prob-bar-fill" id="bar-med" style="background:var(--med)"></div>
             </div>
           </div>
 
           <div class="prob-row">
             <div class="prob-row-header">
               <span>High</span>
-              <span id="pct-high" class="prob-pct" style="color: var(--high)">—</span>
+              <span id="pct-high" class="prob-pct" style="color:var(--high)">—</span>
             </div>
             <div class="prob-bar-track">
-              <div class="prob-bar-fill" id="bar-high" style="background: var(--high)"></div>
+              <div class="prob-bar-fill" id="bar-high" style="background:var(--high)"></div>
             </div>
           </div>
 
         </div>
       </div>
 
-      <!-- Resumen de valores -->
       <div class="info-box">
         <div class="info-box-title">Valores del Último Análisis</div>
-        <div class="info-grid" id="info-grid">
+        <div class="info-grid">
           <div class="info-item">Horas de juego <span id="inf-hours">—</span></div>
           <div class="info-item">Sesiones / semana <span id="inf-sessions">—</span></div>
           <div class="info-item">Duración prom. <span id="inf-duration">—</span></div>
@@ -180,13 +194,11 @@
   <!-- ══ Footer ══════════════════════════════════════════════════════ -->
   <footer>
     GameSense AI &nbsp;&middot;&nbsp; CatBoost Model &nbsp;&middot;&nbsp;
-    <a href="/docs" target="_blank">API Reference (Swagger)</a>
+    <a href="/docs" target="_blank">API Reference</a>
   </footer>
 
-  <!-- ══ Toast ═══════════════════════════════════════════════════════ -->
   <div id="toast"></div>
 
-  <!-- ══ JavaScript ══════════════════════════════════════════════════ -->
   <script src="/static/main.js"></script>
 </body>
 
