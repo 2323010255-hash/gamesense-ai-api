@@ -1,44 +1,72 @@
+# Autor: Paisig Fernandez Neyer
+# Script de entrenamiento — actualizado desde gamespredicctioncatboost.py
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
 from catboost import CatBoostClassifier
 import joblib
 import os
 
-# -- Dataset publico en GitHub ------------------------------------------------
-CSV_URL = "https://raw.githubusercontent.com/2323010255-hash/Dataset-GameSenseAI/refs/heads/main/online_gaming_behavior_insightsStrategyCatBoost.csv"
+# ── Dataset ──────────────────────────────────────────────────────────────────
+CSV_URL = (
+    "https://raw.githubusercontent.com/2323010255-hash/Dataset-GameSenseAI"
+    "/refs/heads/main/online_gaming_behavior_insights.csv"
+)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-print("[*] Cargando dataset desde GitHub...")
-df = pd.read_csv(CSV_URL, sep=",")
-print(f"   Filas: {len(df)} | Columnas: {list(df.columns)}")
+if __name__ == "__main__":
+    print("[*] Cargando dataset desde GitHub...")
+    df = pd.read_csv(CSV_URL, sep=",")
+    print(f"   Filas: {len(df)} | Columnas: {list(df.columns)}")
 
-y = df["EngagementLevel"]
-X = df.drop("EngagementLevel", axis=1)
+    # ── Variables ─────────────────────────────────────────────────────────────
+    y = df["EngagementLevel"]
+    X = df.drop("EngagementLevel", axis=1)
 
-print(f"\n[OK] Features usadas ({len(X.columns)}): {list(X.columns)}")
-print(f"   Clases: {sorted(y.unique())}")
+    # Detectar automáticamente columnas categóricas
+    categorical_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
+    if len(categorical_features) == 0:
+        categorical_features = None
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.3, random_state=30
-)
+    print(f"\n[OK] Features usadas ({len(X.columns)}): {list(X.columns)}")
+    print(f"   Features categóricas: {categorical_features}")
+    print(f"   Clases: {sorted(y.unique())}")
 
-scaler = StandardScaler()
-X_train_sc = scaler.fit_transform(X_train)
-X_test_sc  = scaler.transform(X_test)
+    # ── Split 80/20 ───────────────────────────────────────────────────────────
+    # CatBoost maneja variables categóricas y numéricas nativamente → sin StandardScaler
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=30
+    )
 
-model = CatBoostClassifier(iterations=70, random_state=30, verbose=False)
-model.fit(X_train_sc, y_train)
+    # ── Entrenamiento Modelo Optimizado (320 iteraciones, depth=6) ────────────
+    print("\n[*] Entrenando CatBoostClassifier (320 iteraciones, depth=6)...")
+    model = CatBoostClassifier(
+        iterations=320,
+        random_state=30,
+        cat_features=categorical_features,
+        depth=6,
+        verbose=False,
+    )
+    model.fit(X_train, y_train)
 
-from sklearn.metrics import classification_report
-preds = model.predict(X_test_sc)
-print("\n[*] Reporte de clasificacion:")
-print(classification_report(y_test, preds.flatten(),
-                             target_names=["Low", "Medium", "High"]))
+    # ── Evaluación ────────────────────────────────────────────────────────────
+    preds = model.predict(X_test).flatten()
+    print("\n[*] Reporte de clasificación:")
+    print(classification_report(y_test, preds))
 
-model_path  = os.path.join(BASE_DIR, "modelo_catboost.cbm")
-scaler_path = os.path.join(BASE_DIR, "scaler.pkl")
+    # ── Guardar artefactos ────────────────────────────────────────────────────
+    model_path = os.path.join(BASE_DIR, "modelo_catboost.cbm")
+    model.save_model(model_path)
+    print(f"[OK] Modelo guardado en: {model_path}")
 
-model.save_model(model_path)
-joblib.dump(scaler, scaler_path)
+    # Guardar lista de features para validación en el engine
+    feature_cols = list(X.columns)
+    cat_features_final = categorical_features if categorical_features else []
+    joblib.dump(
+        {"feature_cols": feature_cols, "cat_features": cat_features_final},
+        os.path.join(BASE_DIR, "model_metadata.pkl"),
+    )
+    print("[OK] Metadata guardada en: model_metadata.pkl")
+    print("\n[LISTO] Ejecuta: python api.py")
