@@ -148,7 +148,9 @@ async function runPrediction() {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      let errMsg = err.detail;
+      if (typeof errMsg === 'object') errMsg = JSON.stringify(errMsg);
+      throw new Error(errMsg || `HTTP ${res.status}`);
     }
 
     const data = await res.json();
@@ -328,7 +330,9 @@ async function runBatchPrediction() {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      let errMsg = err.detail;
+      if (typeof errMsg === 'object') errMsg = JSON.stringify(errMsg);
+      throw new Error(errMsg || `HTTP ${res.status}`);
     }
 
     const data = await res.json();
